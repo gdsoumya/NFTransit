@@ -1,0 +1,24 @@
+{
+  "name": "contracts",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "hardhat compile",
+    "getabi": "jq -r '.abi' ./artifacts/contracts/nftransit_token.sol/NFTransitToken.json > token.abi",
+    "getbin": "jq -r '.bytecode' ./artifacts/contracts/nftransit_token.sol/NFTransitToken.json > token.bin",
+    "postbuild": "npm run getabi && npm run getbin"
+  },
+  "author": "Soumya Ghosh Dastidar",
+  "license": "ISC",
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@nomiclabs/hardhat-waffle": "^2.0.1",
+    "@openzeppelin/contracts": "^4.3.3",
+    "chai": "^4.3.4",
+    "ethereum-waffle": "^3.4.0",
+    "ethers": "^5.5.1",
+    "hardhat": "^2.6.8"
+  }
+}
