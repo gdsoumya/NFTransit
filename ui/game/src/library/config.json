@@ -1,0 +1,13 @@
+{
+    "pk": "<game_admin_private_key>",
+    "rpc": "https://matic-mumbai.chainstacklabs.com",
+    "ipfs": {
+        "uploadAddr": "https://ipfs.infura.io:5001/api/v0",
+        "retrieveAddr": "https://ipfs.infura.io/ipfs/"
+    },
+    "name": "NFTransit",
+    "version": "0.1",
+    "chainId": 80001,
+    "contract": "0xbC96A0230c92AA5BF3F2990b5EeCEbA633A4249D",
+    "backend": "http://127.0.0.1:8080"
+}
