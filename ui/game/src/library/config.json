@@ -1,5 +1,5 @@
 {
-    "pk": "<game_admin_private_key>",
+    "pk": "da8d5ba275bff367cdcedbeb1714d5c5e89bae8c19e47a79830e2de7dde09746",
     "rpc": "https://matic-mumbai.chainstacklabs.com",
     "ipfs": {
         "uploadAddr": "https://ipfs.infura.io:5001/api/v0",

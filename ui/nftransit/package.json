@@ -1,44 +1,51 @@
 {
-  "name": "nftransit",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@testing-library/jest-dom": "^5.15.0",
-    "@testing-library/react": "^11.2.7",
-    "@testing-library/user-event": "^12.8.3",
-    "ethers": "^5.5.1",
-    "react": "^17.0.2",
-    "react-awesome-loaders": "^0.1.37",
-    "react-dom": "^17.0.2",
-    "react-scripts": "4.0.3",
-    "reactjs-popup": "^2.0.5",
-    "semantic-ui-css": "^2.4.1",
-    "semantic-ui-react": "^2.0.4",
-    "web-vitals": "^1.1.2",
-    "ipfs-http-client": "^54.0.1"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+	"name": "nftransit",
+	"version": "0.1.0",
+	"private": true,
+	"dependencies": {
+		"@testing-library/jest-dom": "^5.15.0",
+		"@testing-library/react": "^11.2.7",
+		"@testing-library/user-event": "^12.8.3",
+		"ethers": "^5.5.1",
+		"react": "^17.0.2",
+		"react-awesome-loaders": "^0.1.37",
+		"react-dom": "^17.0.2",
+		"react-scripts": "4.0.3",
+		"reactjs-popup": "^2.0.5",
+		"semantic-ui-css": "^2.4.1",
+		"semantic-ui-react": "^2.0.4",
+		"web-vitals": "^1.1.2",
+		"ipfs-http-client": "^54.0.1",
+		"@emotion/react": "^11.7.0",
+		"@emotion/styled": "^11.6.0",
+		"@mui/icons-material": "^5.2.0",
+		"@mui/material": "^5.2.1",
+		"@mui/styles": "^5.2.1",
+		"react-router-dom": "^6.0.2",
+		"save": "^2.4.0"
+	},
+	"scripts": {
+		"start": "react-scripts start",
+		"build": "react-scripts build",
+		"test": "react-scripts test",
+		"eject": "react-scripts eject"
+	},
+	"eslintConfig": {
+		"extends": [
+			"react-app",
+			"react-app/jest"
+		]
+	},
+	"browserslist": {
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
+		"development": [
+			"last 1 chrome version",
+			"last 1 firefox version",
+			"last 1 safari version"
+		]
+	}
 }

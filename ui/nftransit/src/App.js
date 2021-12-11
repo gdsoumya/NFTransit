@@ -1,275 +1,417 @@
-import "./App.css";
-
-import {
-  Button,
-  Container,
-  Grid,
-  Header,
-  Image,
-  Modal,
-} from "semantic-ui-react";
+import { Box, Button, Modal, Typography } from "@mui/material";
+import { TextField, ThemeProvider, createTheme } from "@mui/material";
 import { burn, getNFTS } from "./library/api";
 
-import { ScatterBoxLoader } from "react-awesome-loaders";
+import { ArtWork } from "./skinsPageArtwork";
+import { BoltLoader } from "react-awesome-loaders";
+import GameItem from "./components/GameItem";
+import Header from "./components/Header";
+import React from "react";
 import { ethers } from "ethers";
 import { retrieveJSON } from "./library/ipfs";
 import { useState } from "react";
+import { weaponItems } from "./data";
+import { withStyles } from "@mui/styles";
+
+const StyledTextField = withStyles({
+	root: {
+		padding: "3px",
+		"& .MuiOutlinedInput-root": {
+			"& fieldset": {
+				borderColor: "#FFFFFF",
+			},
+			"&:hover fieldset": {
+				borderColor: "#FFFFFF",
+			},
+			"&.Mui-focused fieldset": {
+				borderColor: "#FFFFFF",
+			},
+		},
+		"& .MuiFormLabel-root.Mui-disabled": {
+			color: "#FFFFFF",
+		},
+	},
+})(TextField);
 
 function App() {
-  const [cards, setCards] = useState(null);
-  const [open, setOpen] = useState(false);
-  const [wallet, setWallet] = useState(null);
-  const [txData, setTxData] = useState(null);
-  const [addr, setAddr] = useState(null);
-  const [item, setItem] = useState(null);
-  const [loading, setLoader] = useState(false);
+	const theme = createTheme({
+		typography: {
+			fontFamily: "VALORANT",
+		},
+	});
+	const [agentArtwork, setAgentArtwork] = useState();
+	const [cards, setCards] = useState(null);
+	const [open, setOpen] = useState(false);
+	const [wallet, setWallet] = useState(null);
+	const [txData, setTxData] = useState(null);
+	const [addr, setAddr] = useState(null);
+	const [item, setItem] = useState(null);
+	const [loading, setLoader] = useState(false);
 
-  const burnItemPress = async (item) => {
-    setLoader(true);
-    const data = await burn(wallet, item.id);
-    const newCards = cards.filter((card) => card.id !== item.id);
-    setCards(newCards);
-    setTxData(data);
-    setLoader(false);
-  };
+	React.useEffect(() => {
+		const selectedArt = ArtWork[(Math.random() * ArtWork.length).toFixed()];
+		setAgentArtwork(selectedArt);
+	}, []);
 
-  const updateTokens = async (addr) => {
-    const data = await getNFTS(addr);
-    const cardList = [];
-    console.log(data);
-    for (let id in data) {
-      console.log(data[id]);
-      if (data[id].startsWith("ipfs://")) {
-        const meta = await retrieveJSON(data[id]);
-        console.log(meta);
-        meta.id = id;
-        cardList.push(meta);
-      }
-    }
-    setCards(cardList);
-  };
+	const burnItemPress = async (item) => {
+		setLoader(true);
+		const data = await burn(wallet, item.id);
+		const newCards = cards.filter((card) => card.id !== item.id);
+		setCards(newCards);
+		setTxData(data);
+		setLoader(false);
+	};
 
-  const connectWalletPress = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    await provider.send("eth_requestAccounts", []);
-    const signer = provider.getSigner();
-    const addr = await signer.getAddress();
-    console.log(addr);
-    setAddr(addr);
-    setWallet(signer);
-    await updateTokens(addr);
-  };
+	const updateTokens = async (addr) => {
+		const data = await getNFTS(addr);
+		const cardList = [];
+		console.log(data);
+		for (let id in data) {
+			console.log(data[id]);
+			if (data[id].startsWith("ipfs://")) {
+				const meta = await retrieveJSON(data[id]);
+				console.log(meta);
+				meta.id = id;
+				cardList.push(meta);
+			}
+		}
+		setCards(cardList);
+	};
 
-  const refreshPress = async () => {
-    if (addr !== null) {
-      await updateTokens(addr);
-    }
-  };
+	const connectWalletPress = async () => {
+		const provider = new ethers.providers.Web3Provider(window.ethereum);
+		await provider.send("eth_requestAccounts", []);
+		const signer = provider.getSigner();
+		const addr = await signer.getAddress();
+		console.log(addr);
+		setAddr(addr);
+		setWallet(signer);
+		await updateTokens(addr);
+	};
 
-  const ItemGrid = () => {
-    return (
-      <div className="items">
-        {cards.map((card) => (
-          <Image
-            className="item"
-            src={card.image}
-            onClick={() => showModal(card)}
-          />
-        ))}
-      </div>
-    );
-  };
+	const refreshPress = async () => {
+		if (addr !== null) {
+			await updateTokens(addr);
+		}
+	};
 
-  const LoadingBurnModal = () => {
-    return (
-      <Modal
-        size="small"
-        open={loading}
-        style={{
-          border: "15px solid",
-          color: "midnightblue",
-          borderRadius: "20px",
-        }}
-      >
-        <Header
-          size="huge"
-          style={{
-            backgroundColor: "#000000",
-            color: "white",
-          }}
-        >
-          BURNING...
-        </Header>
-        <Modal.Content
-          style={{
-            backgroundColor: "#000000",
-            color: "white",
-          }}
-        >
-          <div
-            style={{
-              paddingLeft: "115px",
-              marginLeft: "115px",
-              paddingBottom: "50px",
-            }}
-          >
-            <ScatterBoxLoader primaryColor={"lime"} background={"#000000"} />
-          </div>
-        </Modal.Content>
-      </Modal>
-    );
-  };
+	const ItemGrid = () => {
+		return (
+			<div
+				style={{
+					marginTop: 10,
+					display: "flex",
+					flexDirection: "row",
+					flexWrap: "wrap",
+					height: "80vh",
+					overflowY: "scroll",
+				}}>
+				{cards.map((card) => (
+					<GameItem
+						imgPath={card.image}
+						onCardClick={() => showModal(card)}
+					/>
+				))}
+			</div>
+		);
+	};
 
-  const ItemModal = ({ item }) => {
-    const stats = item.attributes.filter(
-      (attr) => attr.trait_type === "stats"
-    )[0].value;
-    const level = item.attributes.filter(
-      (attr) => attr.trait_type === "level"
-    )[0].value;
-    console.log(item);
-    return (
-      <div>
-        <Modal
-          onClose={() => {
-            setTxData(null);
-            setOpen(false);
-          }}
-          onOpen={() => setOpen(true)}
-          open={open}
-          style={{
-            border: "15px solid",
-            color: "midnightblue",
-            borderRadius: "20px",
-          }}
-        >
-          <Header
-            size="large"
-            style={{
-              backgroundColor: "#000000",
-              color: "white",
-            }}
-          >
-            BURN?
-          </Header>
-          {txData === null ? (
-            <>
-              <Modal.Content image style={{ backgroundColor: "#000" }}>
-                <Image size="medium" src={item?.image} wrapped />
-                <Modal.Description style={{ width: "100%" }}>
-                  <Header size="large" style={{ color: "yellow" }}>
-                    {item.name}
-                  </Header>
-                  <p style={{ color: "red" }}>LEVEL: {level}</p>
-                  <p style={{ color: "forestgreen" }}>{stats}</p>
-                  <p style={{ color: "white" }}>{item.description}</p>
-                </Modal.Description>
-              </Modal.Content>
-              <Modal.Actions style={{ backgroundColor: "#000" }}>
-                <Button
-                  color="black"
-                  inverted="true"
-                  size="huge"
-                  onClick={() => {
-                    setOpen(false);
-                  }}
-                >
-                  Nope
-                </Button>
-                <Button
-                  content="BURN!"
-                  onClick={() => burnItemPress(item)}
-                  size="huge"
-                  inverted="true"
-                  color="green"
-                />
-              </Modal.Actions>
-            </>
-          ) : (
-            <>
-              <Modal.Content image style={{ backgroundColor: "#000" }}>
-                <Image size="medium" src={item?.image} wrapped />
-                <Modal.Description style={{ width: "100%" }}>
-                  <Header size="large" style={{ color: "yellow" }}>
-                    {item.name}
-                  </Header>
-                  <p style={{ color: "red", "overflow-wrap": "anywhere" }}>
-                    Tx Hash: {txData.hash}
-                  </p>
-                  <p
-                    style={{
-                      color: "forestgreen",
-                      "overflow-wrap": "anywhere",
-                    }}
-                  >
-                    Sig : {txData.sig}
-                  </p>
-                </Modal.Description>
-              </Modal.Content>
-              <Modal.Actions style={{ backgroundColor: "#000" }}>
-                <Button
-                  color="black"
-                  inverted="true"
-                  size="huge"
-                  onClick={() => {
-                    setTxData(null);
-                    setOpen(false);
-                  }}
-                >
-                  Close
-                </Button>
-              </Modal.Actions>
-            </>
-          )}
-        </Modal>
-      </div>
-    );
-  };
+	const ItemModal = ({ item }) => {
+		return (
+			<Modal
+				open={open}
+				style={{
+					display: "flex",
+					alignItems: "center",
+					justifyContent: "center",
+				}}>
+				<Box
+					style={{
+						width: "800px",
+						height: "600px",
+						boxShadow: "0px 0px 10px #fff",
+						borderRadius: 10,
+						shadowRadius: 2,
+						elevation: 2,
+						padding: 20,
+						backgroundImage: `url(${"/assets/valorant-modal.png"})`,
+						backgroundSize: "cover",
+						backgroundPosition: "center",
+						color: "#FFFFFF",
+					}}>
+					{loading ? (
+						<div
+							style={{
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "center",
+								flexDirection: "column",
+								padding: 40,
+							}}>
+							<BoltLoader
+								boltColor={"#FFFFFF"}
+								backgroundBlurColor={"#E0E7FF"}
+							/>
+							<Typography variant="h4" style={{ marginTop: 120 }}>
+								Burning your NFTs
+							</Typography>
+						</div>
+					) : txData === null ? (
+						<div>
+							<div>
+								<img
+									src={item?.image}
+									style={{
+										display: "block",
+										margin: "auto",
+										maxWidth: 350,
+										padding: 50,
+									}}
+								/>
+								<Typography
+									style={{
+										color: "yellow",
+										textAlign: "center",
+										fontSize: 50,
+										marginTop: 20,
+									}}>
+									{item.name}
+								</Typography>
+								<p
+									style={{
+										color: "white",
+										textAlign: "center",
+										fontSize: 30,
+										marginTop: 20,
+										fontFamily: "Roboto, sans-serif",
+									}}>
+									{item.description}
+								</p>
+							</div>
+							<div
+								style={{
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "center",
+									marginTop: 30,
+								}}>
+								<Button
+									style={{
+										width: 200,
+										height: 50,
+										border: "2px solid #FFFFFF",
+									}}
+									onClick={() => {
+										setOpen(false);
+									}}>
+									<Typography
+										style={{ color: "#FFFFFF", fontSize: 16 }}>
+										{" "}
+										Nope
+									</Typography>
+								</Button>
+								<Button
+									style={{
+										width: 250,
+										height: 50,
+										marginLeft: 20,
+										border: "2px solid #FFFFFF",
+									}}
+									onClick={() => burnItemPress(item)}>
+									<Typography
+										style={{ color: "#FFFFFF", fontSize: 16 }}>
+										{" "}
+										Burn!
+									</Typography>
+								</Button>
+							</div>
+						</div>
+					) : (
+						<>
+							<img
+								src={item?.image}
+								style={{
+									display: "block",
+									margin: "auto",
+									maxWidth: 350,
+									padding: 50,
+								}}
+							/>
+							<Typography
+								style={{
+									color: "yellow",
+									textAlign: "center",
+									fontSize: 50,
+									marginTop: 20,
+								}}>
+								{item.name}
+							</Typography>
+							<div
+								style={{
+									width: "100%",
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "center",
+								}}>
+								<StyledTextField
+									label="Tx Hash"
+									variant="outlined"
+									focused
+									value={txData.hash}
+									inputProps={{
+										style: {
+											fontFamily: "Roboto san-serif",
+											color: "#FFFFFF",
+										},
+									}}
+									style={{ marginTop: 40 }}
+									InputLabelProps={{
+										style: { color: "#fff" },
+									}}
+								/>
+								<StyledTextField
+									label="Sig"
+									variant="outlined"
+									focused
+									value={txData.sig}
+									inputProps={{
+										style: {
+											fontFamily: "Roboto san-serif",
+											color: "#FFFFFF",
+										},
+									}}
+									style={{ marginTop: 40 }}
+									InputLabelProps={{
+										style: { color: "#fff" },
+									}}
+								/>
+							</div>
 
-  const showModal = (card) => {
-    setItem(card);
-    setOpen(true);
-  };
+							<div
+								style={{
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "center",
+									marginTop: 30,
+								}}>
+								<Button
+									style={{
+										width: 250,
+										height: 50,
+										border: "2px solid #FFFFFF",
+									}}
+									onClick={() => {
+										setTxData(null);
+										setOpen(false);
+									}}>
+									<Typography
+										style={{ color: "#FFFFFF", fontSize: 16 }}>
+										{" "}
+										Close
+									</Typography>
+								</Button>
+							</div>
+						</>
+					)}
+				</Box>
+			</Modal>
+		);
+	};
 
-  return (
-    <Container className="center">
-      <div>
-        <Button
-          inverted="true"
-          color="green"
-          size="huge"
-          onClick={() => refreshPress()}
-          className="refresh-button"
-        >
-          REFRESH
-        </Button>
-        <Button
-          inverted="true"
-          color="green"
-          size="huge"
-          onClick={() => connectWalletPress()}
-          className="transfer-button"
-        >
-          {wallet ? truncate(addr, 15) : "CONNECT WALLET"}
-        </Button>
-        <Header
-          size="huge"
-          style={{
-            backgroundColor: "#000000",
-            color: "white",
-            marginBottom: "40px",
-          }}
-        >
-          NFTransit
-        </Header>
-        {cards ? <ItemGrid /> : null}
-        {item ? <ItemModal item={item} /> : null}
-        <LoadingBurnModal />
-      </div>
-    </Container>
-  );
+	const showModal = (card) => {
+		setItem(card);
+		setOpen(true);
+	};
+
+	return (
+		<ThemeProvider theme={theme}>
+			<Header>
+				<div>
+					<div
+						style={{
+							display: "flex",
+							maxWidth: "1536px",
+							alignItems: "center",
+							justifyContent: "center",
+							margin: "auto",
+						}}>
+						<div style={{ display: "block", marginLeft: "auto" }}>
+							<Button
+								style={{
+									marginTop: 50,
+									width: 200,
+									height: 40,
+									border: "2px solid #FFFFFF",
+								}}
+								onClick={() => refreshPress()}>
+								<Typography
+									style={{ color: "#FFFFFF", fontSize: 16 }}>
+									{" "}
+									Refresh NFTs
+								</Typography>
+							</Button>
+							<Button
+								style={{
+									marginTop: 50,
+									width: 250,
+									height: 40,
+									marginLeft: 20,
+									border: "2px solid #FFFFFF",
+								}}
+								onClick={() => connectWalletPress()}>
+								<Typography
+									style={{ color: "#FFFFFF", fontSize: 16 }}>
+									{" "}
+									{wallet ? truncate(addr, 15) : "CONNECT WALLET"}
+								</Typography>
+							</Button>
+						</div>
+					</div>
+					<div style={{ maxWidth: "1700px" }}>
+						<div style={{ width: "20%" }}>
+							{agentArtwork && (
+								<img
+									src={agentArtwork.image}
+									alt={agentArtwork.name}
+									style={{
+										height: "90vh",
+										position: "absolute",
+										left: 0,
+										bottom: 0,
+										display: "inline-block",
+										overflow: "hidden",
+									}}
+								/>
+							)}
+						</div>
+						<div
+							style={{
+								marginLeft: "auto",
+								width: "60%",
+							}}>
+							{cards && cards.length > 0 ? (
+								<ItemGrid />
+							) : (
+								<Typography
+									style={{
+										textAlign: "center",
+										fontSize: 40,
+										marginTop: 200,
+										width: 500,
+										marginLeft: 100,
+									}}>
+									No Game NFTs available
+								</Typography>
+							)}
+							{item ? <ItemModal item={item} /> : null}
+						</div>
+					</div>
+				</div>
+			</Header>
+		</ThemeProvider>
+	);
 }
 const truncate = (str, n) => {
-  return str.length > n ? str.substr(0, n - 1) + "..." : str;
+	return str.length > n ? str.substr(0, n - 1) + "..." : str;
 };
 export default App;

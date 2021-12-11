@@ -1,0 +1,13 @@
+@import url("http://fonts.cdnfonts.com/css/valorant");
+
+body {
+	background: url("./game_background2.png") no-repeat center center fixed;
+	background-size: cover;
+	margin: 0;
+}
+
+.root {
+	height: 100vh;
+	font-size: 1.5em;
+	color: #fff;
+}
